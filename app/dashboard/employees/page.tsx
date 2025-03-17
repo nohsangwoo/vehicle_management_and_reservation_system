@@ -1,17 +1,25 @@
+"use client"
+
+import { useState } from "react"
 import { EmployeeTable } from "@/components/employee-table"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { EmployeeFilters } from "@/components/employee-filters"
 
 export default function EmployeesPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [status, setStatus] = useState("")
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">직원 관리</h1>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />새 직원 등록
-        </Button>
-      </div>
-      <EmployeeTable />
+      <EmployeeFilters 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm}
+        status={status}
+        setStatus={setStatus}
+      />
+      <EmployeeTable 
+        searchTerm={searchTerm}
+        statusFilter={status}
+      />
     </div>
   )
 }

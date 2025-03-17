@@ -1,10 +1,12 @@
-import type { Reservation, ReservationFormData, ReservationStatus, Vehicle } from "@/lib/types"
+import type { Employee, Reservation, ReservationFormData, ReservationStatus, Vehicle } from "@/lib/types"
 import { mockReservations } from "@/lib/mock-data"
 import { mockVehicles } from "@/lib/mock-data"
+import { mockEmployees } from "@/lib/mock-data"
 
 // 로컬 스토리지 키
 const RESERVATIONS_KEY = "vehicle-management-reservations"
 const VEHICLES_KEY = "vehicle-management-vehicles"
+const EMPLOYEES_KEY = "vehicle-management-employees"
 
 // 모의 API 지연 시간 (실제 API 호출 시뮬레이션)
 const mockDelay = () => new Promise((resolve) => setTimeout(resolve, 500))
@@ -208,5 +210,91 @@ export const deleteVehicle = async (id: string) => {
   const vehicles = getVehicles()
   const updatedVehicles = vehicles.filter((vehicle: Vehicle) => vehicle.id !== id)
   saveVehicles(updatedVehicles)
+}
+
+// 로컬 스토리지에서 직원 데이터 가져오기
+export const getEmployees = () => {
+  if (typeof window === "undefined") return []
+
+  try {
+    const storedData = localStorage.getItem(EMPLOYEES_KEY)
+    if (!storedData) {
+      // 초기 데이터 설정
+      localStorage.setItem(EMPLOYEES_KEY, JSON.stringify(mockEmployees))
+      return mockEmployees
+    }
+    return JSON.parse(storedData)
+  } catch (error) {
+    console.error("로컬 스토리지에서 직원 데이터를 가져오는 중 오류 발생:", error)
+    return []
+  }
+}
+
+// 로컬 스토리지에 직원 데이터 저장
+export const saveEmployees = (employees: Employee[]) => {
+  if (typeof window === "undefined") return
+
+  try {
+    localStorage.setItem(EMPLOYEES_KEY, JSON.stringify(employees))
+  } catch (error) {
+    console.error("로컬 스토리지에 직원 데이터를 저장하는 중 오류 발생:", error)
+  }
+}
+
+// 특정 ID의 직원 가져오기
+export const getEmployee = (id: string) => {
+  const employees = getEmployees()
+  return employees.find((employee: Employee) => employee.id === id)
+}
+
+// 새 직원 추가
+export const addEmployee = async (employeeData: Partial<Employee>) => {
+  // 모의 API 지연
+  await mockDelay()
+
+  const newEmployee = {
+    id: `e${Date.now()}`,
+    ...employeeData,
+  }
+
+  const employees = getEmployees()
+  const updatedEmployees = [...employees, newEmployee]
+  saveEmployees(updatedEmployees)
+
+  return newEmployee
+}
+
+// 직원 정보 업데이트
+export const updateEmployee = async (id: string, data: Partial<Employee>) => {
+  // 모의 API 지연
+  await mockDelay()
+
+  const employees = getEmployees()
+  let updatedEmployee
+
+  const updatedEmployees = employees.map((employee: Employee) => {
+    if (employee.id === id) {
+      updatedEmployee = { ...employee, ...data }
+      return updatedEmployee
+    }
+    return employee
+  })
+
+  if (!updatedEmployee) {
+    throw new Error("직원을 찾을 수 없습니다.")
+  }
+
+  saveEmployees(updatedEmployees)
+  return updatedEmployee
+}
+
+// 직원 삭제
+export const deleteEmployee = async (id: string) => {
+  // 모의 API 지연
+  await mockDelay()
+
+  const employees = getEmployees()
+  const updatedEmployees = employees.filter((employee: Employee) => employee.id !== id)
+  saveEmployees(updatedEmployees)
 }
 

@@ -40,3 +40,12 @@ export interface Vehicle {
   lastVisit: string | null
   notes: string | null
 }
+
+export interface Employee {
+  id: string
+  name: string
+  position: string
+  email: string
+  phone: string
+  isActive: boolean
+}

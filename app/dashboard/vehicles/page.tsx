@@ -1,19 +1,27 @@
+"use client"
+
+import { useState } from "react"
 import { VehicleTable } from "@/components/vehicle-table"
 import { VehicleFilters } from "@/components/vehicle-filters"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
 
 export default function VehiclesPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [status, setStatus] = useState("")
+  console.log("searchTerm:", searchTerm)
+  console.log("status:", status)
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">차량 관리</h1>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />새 차량 등록
-        </Button>
-      </div>
-      <VehicleFilters />
-      <VehicleTable />
+      <VehicleFilters 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm}
+        status={status}
+        setStatus={setStatus}
+      />
+      <VehicleTable 
+        searchTerm={searchTerm}
+        status={status}
+      />
     </div>
   )
 }

@@ -1,12 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, X } from "lucide-react"
 
-export function VehicleFilters({ 
+export function EmployeeFilters({ 
   searchTerm, 
   setSearchTerm, 
   status, 
@@ -26,7 +25,7 @@ export function VehicleFilters({
     <div className="flex flex-col gap-4 md:flex-row">
       <div className="flex flex-1 items-center gap-2">
         <Input
-          placeholder="번호판 또는 소유자 검색..."
+          placeholder="이름, 직책 또는 이메일 검색..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
@@ -42,10 +41,8 @@ export function VehicleFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">모든 상태</SelectItem>
-            <SelectItem value="입차">입차</SelectItem>
-            <SelectItem value="상담 대기">상담 대기</SelectItem>
-            <SelectItem value="상담 완료">상담 완료</SelectItem>
-            <SelectItem value="출차">출차</SelectItem>
+            <SelectItem value="active">활성</SelectItem>
+            <SelectItem value="inactive">비활성</SelectItem>
           </SelectContent>
         </Select>
         {(searchTerm || status) && (
@@ -57,5 +54,4 @@ export function VehicleFilters({
       </div>
     </div>
   )
-}
-
+} 

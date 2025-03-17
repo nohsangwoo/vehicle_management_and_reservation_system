@@ -20,7 +20,7 @@ import { getVehicles, deleteVehicle } from "@/lib/local-storage"
 import { useToast } from "@/hooks/use-toast"
 import { Vehicle } from "@/lib/types"
 
-export function VehicleTable() {
+export function VehicleTable({ searchTerm, status }: { searchTerm: string, status: string }) {
   const [vehicles, setVehicles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
@@ -29,6 +29,11 @@ export function VehicleTable() {
   useEffect(() => {
     fetchVehicles()
   }, [])
+
+  // 필터링된 차량 목록 계산 - searchTerm이나 status가 변경될 때마다 재계산
+  useEffect(() => {
+    console.log("필터 변경됨:", { searchTerm, status })
+  }, [searchTerm, status])
 
   const fetchVehicles = () => {
     setIsLoading(true)
@@ -92,6 +97,19 @@ export function VehicleTable() {
     }
   }
 
+  // 필터링된 차량 목록 계산
+  const filteredVehicles = vehicles.filter((vehicle: Vehicle) => {
+    // 검색어 필터링
+    const matchesSearch = searchTerm === "" || 
+      vehicle.licensePlate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.owner.name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // 상태 필터링
+    const matchesStatus = status === "" || status === "all" || vehicle.status === status;
+    
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="rounded-md border">
       <div className="p-4 flex justify-end">
@@ -125,14 +143,14 @@ export function VehicleTable() {
                 데이터를 불러오는 중...
               </TableCell>
             </TableRow>
-          ) : vehicles.length === 0 ? (
+          ) : filteredVehicles.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} className="h-24 text-center">
-                등록된 차량이 없습니다.
+                {vehicles.length === 0 ? "등록된 차량이 없습니다." : "검색 결과가 없습니다."}
               </TableCell>
             </TableRow>
           ) : (
-            vehicles.map((vehicle: Vehicle) => (
+            filteredVehicles.map((vehicle: Vehicle) => (
               <TableRow key={vehicle.id}>
                 <TableCell className="font-medium">
                   <Link href={`/dashboard/vehicles/${vehicle.id}`} className="hover:underline">
