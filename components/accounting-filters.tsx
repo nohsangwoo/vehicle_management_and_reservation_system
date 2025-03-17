@@ -10,6 +10,7 @@ import { format } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Search, CalendarIcon, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { DateRange } from "react-day-picker"
 
 export function AccountingFilters() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -27,6 +28,15 @@ export function AccountingFilters() {
     setServiceType("")
     setDateRange({ from: undefined, to: undefined })
   }
+
+  const handleDateRangeSelect = (range: DateRange | undefined) => {
+    if (range) {
+      setDateRange({
+        from: range.from,
+        to: range.to || undefined
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 md:flex-row">
@@ -86,7 +96,7 @@ export function AccountingFilters() {
               mode="range"
               defaultMonth={dateRange.from}
               selected={dateRange}
-              onSelect={setDateRange}
+              onSelect={handleDateRangeSelect}
               locale={ko}
               numberOfMonths={2}
             />
