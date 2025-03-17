@@ -21,3 +21,22 @@ export interface ReservationFormData {
   notes?: string
 }
 
+export interface Vehicle {
+  id: string
+  licensePlate: string
+  model: string
+  manufacturer: string
+  year: number
+  color: string
+  owner: {
+    name: string
+    phone: string
+    email: string
+  }
+  status: string
+  entryTime: string
+  expectedExitTime: string | null
+  visitCount: number
+  lastVisit: string | null
+  notes: string | null
+}

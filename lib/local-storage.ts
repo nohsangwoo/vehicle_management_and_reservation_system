@@ -1,8 +1,10 @@
-import type { Reservation, ReservationFormData, ReservationStatus } from "@/lib/types"
+import type { Reservation, ReservationFormData, ReservationStatus, Vehicle } from "@/lib/types"
 import { mockReservations } from "@/lib/mock-data"
+import { mockVehicles } from "@/lib/mock-data"
 
 // 로컬 스토리지 키
 const RESERVATIONS_KEY = "vehicle-management-reservations"
+const VEHICLES_KEY = "vehicle-management-vehicles"
 
 // 모의 API 지연 시간 (실제 API 호출 시뮬레이션)
 const mockDelay = () => new Promise((resolve) => setTimeout(resolve, 500))
@@ -118,5 +120,93 @@ export const deleteReservation = async (id: string): Promise<void> => {
   const reservations = getReservations()
   const updatedReservations = reservations.filter((reservation) => reservation.id !== id)
   saveReservations(updatedReservations)
+}
+
+// 로컬 스토리지에서 차량 데이터 가져오기
+export const getVehicles = () => {
+  if (typeof window === "undefined") return []
+
+  try {
+    const storedData = localStorage.getItem(VEHICLES_KEY)
+    if (!storedData) {
+      // 초기 데이터 설정
+      localStorage.setItem(VEHICLES_KEY, JSON.stringify(mockVehicles))
+      return mockVehicles
+    }
+    return JSON.parse(storedData)
+  } catch (error) {
+    console.error("로컬 스토리지에서 차량 데이터를 가져오는 중 오류 발생:", error)
+    return []
+  }
+}
+
+// 로컬 스토리지에 차량 데이터 저장
+export const saveVehicles = (vehicles: Vehicle[]) => {
+  if (typeof window === "undefined") return
+
+  try {
+    localStorage.setItem(VEHICLES_KEY, JSON.stringify(vehicles))
+  } catch (error) {
+    console.error("로컬 스토리지에 차량 데이터를 저장하는 중 오류 발생:", error)
+  }
+}
+
+// 특정 ID의 차량 가져오기
+export const getVehicle = (id: string) => {
+  const vehicles = getVehicles()
+  return vehicles.find((vehicle: Vehicle) => vehicle.id === id)
+}
+
+// 새 차량 추가
+export const addVehicle = async (vehicleData: Partial<Vehicle>) => {
+  // 모의 API 지연
+  await mockDelay()
+
+  const newVehicle = {
+    id: `v${Date.now()}`,
+    ...vehicleData,
+    visitCount: 0,
+    lastVisit: null,
+  }
+
+  const vehicles = getVehicles()
+  const updatedVehicles = [...vehicles, newVehicle]
+  saveVehicles(updatedVehicles)
+
+  return newVehicle
+}
+
+// 차량 정보 업데이트
+export const updateVehicle = async (id: string, data: Partial<Vehicle>) => {
+  // 모의 API 지연
+  await mockDelay()
+
+  const vehicles = getVehicles()
+  let updatedVehicle
+
+  const updatedVehicles = vehicles.map((vehicle: Vehicle) => {
+    if (vehicle.id === id) {
+      updatedVehicle = { ...vehicle, ...data }
+      return updatedVehicle
+    }
+    return vehicle
+  })
+
+  if (!updatedVehicle) {
+    throw new Error("차량을 찾을 수 없습니다.")
+  }
+
+  saveVehicles(updatedVehicles)
+  return updatedVehicle
+}
+
+// 차량 삭제
+export const deleteVehicle = async (id: string) => {
+  // 모의 API 지연
+  await mockDelay()
+
+  const vehicles = getVehicles()
+  const updatedVehicles = vehicles.filter((vehicle: Vehicle) => vehicle.id !== id)
+  saveVehicles(updatedVehicles)
 }
 
